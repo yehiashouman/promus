@@ -1,17 +1,16 @@
-import core.events.EventDispatcher
+import promus.core.events.EventDispatcher
 class Environment(Base):
     def __init__(gpio,mode="BCM"):
-        self.gpio = gpio
-        gpio.setmode(mode)
-        self.sensors = []
-        self.displays = []
-        self.servers = []
-        self.threads = []
+        self.__gpio = gpio
+        self.__gpio.setmode(mode)
+        self.__sensors = []
+        self.__displays = []
+        self.__servers = []
+        self.__threads = []
         return;
     def addSensor(sensorInstance):
-        sensorInstance.gpio= self.gpio
-        self.id = "obj_"+rand(1000)
-        self.sensors.append()
+        sensorInstance.gpio= self.__gpio
+        self.__sensors.append()
         return;
     def removeSensorById(sensorID):
         return;
