@@ -9,7 +9,7 @@ class SingleColorLed(EventDispatcher.EventDispatcher):
         self.gpio.output(self.pin,gpio.HIGH)
         self.dispatchEvent(Event.ON)
         return;
-    def off():
+    def off(): 
         self.gpio.output(self.pin,gpio.LOW)
         self.dispatchEvent(Event.OFF)
         return;
