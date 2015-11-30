@@ -6,11 +6,13 @@ class Ultrasonic_HCSR04(events.EventDispatcher):
         self.trigPin = trigPin
         self.echoPin = echoPin
         self.__gpio = gpio
+        self.__signalon  = 0
+        self.__signaloff = 0
+        return;
+    def setup():
         self.__gpio.setup(self.trigPin, self.__gpio.OUT)
         self.__gpio.setup(self.echoPin, self.__gpio.IN)
         self.__gpio.output(self.trigPin, self.__gpio.LOW)
-        self.__signalon  = 0
-        self.__signaloff = 0
         time.sleep(0.3)
         return;
     def trigger():
@@ -24,6 +26,7 @@ class Ultrasonic_HCSR04(events.EventDispatcher):
         timepassed = self.__signalon - self.__signaloff
         distance = timepassed * 17250
         evt = events.Event(events.Event.OBJECT_DETECTED)
+        evt.target=self
         evt.distance = distance
         self.dispatchEvent(evt)
         return;
