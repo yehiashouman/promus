@@ -1,28 +1,33 @@
-import Base from promus.core.Base
 
+from promus.core.Base import Base
 class Event(Base):
-    def __init__(eventType):
+    def __init__(self,eventType):
+        super(Event,self).__init__()
         self.type = eventType
         self.bubbles =False
         self.cancelable= False
         self.target = None
         return;
-    OBJECT_DETECTED = "object_detected"
-    START= "start"
-    COMPLETE = "complete"
-    ON = "on"
-    OFF = "off"
-    CHANGE = "update"
+    EVT_OBJECT_DETECTED = "object_detected"
+    EVT_START= "start"
+    EVT_COMPLETE = "complete"
+    EVT_ON = "on"
+    EVT_OFF = "off"
+    EVT_CHANGE = "update"
 
-class EventDispatcher(Base.Base):
-    def __init__():
-        self.__subscribers = []
+class EventDispatcher(Base):
+    def __init__(self):
+        super(EventDispatcher,self).__init__()
+        #TODO: Make subscribers list dynamically filled
+        self.__subscribers = {"complete":[],"start":[],"on":[],"off":[],"flash":[]}
         return;
-    def addEventListener(eventName,eventHandler):
-        if (!self.__subscribers[eventName]):
+
+    def addEventListener(self,eventName,eventHandler):
+        if (eventName in self.__subscribers.keys()==False):
                 self.__subscribers[eventName]=[]
         self.__subscribers[eventName].append(eventHandler)
-    def dispatchEvent(event):
-        for eventHandler in self.__subscribers[eventName]:
-            eventHandler(event)
+
+    def dispatchEvent(self,event):
+        for subscriber in self.__subscribers[event.type]:
+            subscriber(event)
         return;
