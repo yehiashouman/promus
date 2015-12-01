@@ -6,6 +6,7 @@ from promus.led.SingleColorLed import SingleColorLed
 from  promus.system.Environment import Environment
 from promus.core.events import Event
 from threading import Thread
+from multiprocessing import Process
 
 try:
     def makeClassInstance(cls, *args, **kwargs):
@@ -33,13 +34,11 @@ try:
     #myGreenLed.flash(3,0.5)
     #buzzer.buzz(404,1)
 
-    buzz = Thread(target= buzzer.buzz,args= (404,4))
-    light = Thread(target= myGreenLed.flash,args = (40,0.1))
+    buzz = Process(target= buzzer.buzz,args= (404,1))
+    light = Process(target= myGreenLed.flash,args = (2,0.5))
 
     buzz.start()
     light.start()
-    buzz.join()
-    light.join()
 
     exit()
 
