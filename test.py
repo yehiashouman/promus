@@ -3,10 +3,12 @@ import time
 import RPi.GPIO as GPIO
 from promus.media.Buzzer import Buzzer
 from promus.led.SingleColorLed import SingleColorLed
+from promus.sensor.Ultrasonic_HCSR04 import Ultrasonic_HCSR04
 from  promus.system.Environment import Environment
 from promus.core.events import Event
 from threading import Thread
 from multiprocessing import Process
+buzzInterval=1
 
 try:
     def makeClassInstance(cls, *args, **kwargs):
@@ -19,52 +21,41 @@ try:
         for name, obj in inspect.getmembers(sys.modules[mod]):
             if inspect.isclass(obj):
                 print(obj)
-        return;
+        return; 
     def handle_events(evt):
-        print evt.target.id() + " dispatched event:"+  evt.type
+        global buzzInterval
+        print evt.target.id() + " dispatched event:"+  evt.type + " Buzz Interval: "+str(buzzInterval)
+        if hasattr(evt,"distance"):
+            buzzInterval = 1 * (evt.distance/60)
+        if(evt.target.id()==buzzer.id() and evt.type ==Event.EVT_COMPLETE):
+            #print "Buzz "+str(buzzInterval)
+            time.sleep(buzzInterval);
+            buzzer.buzz(800,buzzInterval)
         return;
 
     env = Environment(False,GPIO, GPIO.BCM)
+
     myGreenLed = SingleColorLed(12,GPIO)
     myGreenLed.addEventListener(Event.EVT_COMPLETE,handle_events)
     myGreenLed.addEventListener(SingleColorLed.EVT_FLASH,handle_events)
+
     buzzer = Buzzer(16,GPIO)
     buzzer.addEventListener(Event.EVT_COMPLETE,handle_events)
 
-    #myGreenLed.flash(3,0.5)
-    #buzzer.buzz(404,1)
+    uSonic = Ultrasonic_HCSR04(13,6,GPIO)
+    uSonic.addEventListener(Ultrasonic_HCSR04.EVT_OBJECT_DETECTED,handle_events)
+
 
     buzz = Process(target= buzzer.buzz,args= (404,1))
     light = Process(target= myGreenLed.flash,args = (2,0.5))
+    sonic = Process(target= uSonic.trigger,args = [0.5])
 
     buzz.start()
-    light.start()
+    #light.start()
+    sonic.start()
+    #buzzer.buzz(800,0.2)
 
-    exit()
 
-
-    #led = makeClassInstance("SingleColorLed",12,GPIO)
-    #led.flash(3,1)
-    #exit()
-
-    led_routineID = env.createThread("SingleColorLed",12,GPIO)
-    obj = env.getObjectByRoutineName(led_routineID)
-    obj.addEventListener(Event.EVT_COMPLETE,handle_events)
-    obj.addEventListener(SingleColorLed.EVT_FLASH,handle_events)
-
-    led_routineID2 = env.createThread("Buzzer",16,GPIO)
-    obj2 = env.getObjectByRoutineName(led_routineID2)
-    obj2.addEventListener(Event.EVT_COMPLETE,handle_events)
-
-    buzz = Thread(obj2.buzz,300,1)
-    light = Thread(obj.flash,3,0.5)
-    buzz.start()
-    light.start()
-
-    #obj2.buzz(300,1)
-    #obj.flash(3,0.5)
-    #obj2.buzz(404,1)
-    #print env.objects()
 
     while True:
         pass
